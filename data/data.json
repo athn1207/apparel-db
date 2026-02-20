@@ -1,0 +1,20 @@
+[
+  {
+    "id": "auralee-001",
+    "brand": "AURALEE",
+    "product_name": "スウェット 23SS",
+    "price": 12000,
+    "images": [],
+    "screenshot_count": 2,
+    "created_at": "2026-02-21"
+  },
+  {
+    "id": "nike-001",
+    "brand": "NIKE",
+    "product_name": "ナイロンジャケット",
+    "price": 8000,
+    "images": [],
+    "screenshot_count": 5,
+    "created_at": "2026-02-21"
+  }
+]

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ブランド — Apparel DB</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body { margin: 0; font-family: system-ui, -apple-system, sans-serif; background: #f5f5f5; color: #222; min-height: 100vh; padding: 1rem; }
+    .header { margin-bottom: 1rem; }
+    .back { color: #666; font-size: 0.9rem; text-decoration: none; }
+    .back:hover { text-decoration: underline; }
+    h1 { font-size: 1.5rem; margin: 0.5rem 0 0; font-weight: 600; }
+    .product-list { display: flex; flex-direction: column; gap: 0.75rem; max-width: 480px; margin: 0 auto; }
+    .product-card { display: block; background: #fff; padding: 1rem 1.25rem; border-radius: 8px; text-decoration: none; color: inherit; box-shadow: 0 1px 3px rgba(0,0,0,0.08); transition: box-shadow 0.2s; }
+    .product-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.12); }
+    .product-card .name { font-weight: 600; font-size: 1.05rem; }
+    .product-card .meta { font-size: 0.85rem; color: #666; margin-top: 0.25rem; }
+    .loading, .error, .empty { text-align: center; padding: 2rem; color: #666; }
+    .error { color: #c00; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <a class="back" href="index.html">← 一覧に戻る</a>
+    <h1 id="brandTitle">—</h1>
+  </div>
+  <div id="app" class="product-list">
+    <p class="loading">読み込み中…</p>
+  </div>
+
+  <script>
+    (function () {
+      const params = new URLSearchParams(window.location.search);
+      const brandParam = params.get('brand') || '';
+      const app = document.getElementById('app');
+      const brandTitle = document.getElementById('brandTitle');
+
+      function escapeHtml(s) {
+        const div = document.createElement('div');
+        div.textContent = s;
+        return div.innerHTML;
+      }
+
+      function render(products, brandName) {
+        brandTitle.textContent = brandName ? brandName : 'ブランド';
+        if (products.length === 0) {
+          app.innerHTML = '<p class="empty">このブランドの商品はありません。</p>';
+          return;
+        }
+        app.innerHTML = products.map(function (p) {
+          const url = 'product.html?id=' + encodeURIComponent(p.id);
+          const price = p.price != null ? '¥' + Number(p.price).toLocaleString() : '—';
+          return '<a class="product-card" href="' + url + '">' +
+            '<span class="name">' + escapeHtml(p.product_name || p.id) + '</span>' +
+            '<span class="meta">' + price + ' · スクリーンショット: ' + (p.screenshot_count || 0) + '</span>' +
+            '</a>';
+        }).join('');
+      }
+
+      fetch('data/data.json')
+        .then(function (r) { return r.ok ? r.json() : Promise.reject(new Error('Failed to load data')); })
+        .then(function (data) {
+          const products = (data || [])
+            .filter(function (p) { return (p.brand || '') === brandParam; })
+            .sort(function (a, b) { return (Number(b.screenshot_count) || 0) - (Number(a.screenshot_count) || 0); });
+          render(products, brandParam);
+        })
+        .catch(function (err) {
+          brandTitle.textContent = brandParam || '—';
+          app.innerHTML = '<p class="error">データの読み込みに失敗しました。</p>';
+          console.error(err);
+        });
+    })();
+  </script>
+</body>
+</html>
