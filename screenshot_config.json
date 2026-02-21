@@ -1,0 +1,28 @@
+{
+  "use_mercari_iphone_ocr": true,
+  "preprocess": false,
+  "brand_region": {
+    "x_min": 0.05,
+    "x_max": 0.95,
+    "y_min": 0.44,
+    "y_max": 0.56
+  },
+  "product_region": {
+    "x_min": 0.05,
+    "x_max": 0.95,
+    "y_min": 0.32,
+    "y_max": 0.46
+  },
+  "brand_zone": {
+    "y_min": 0.44,
+    "y_max": 0.52,
+    "x_min": 0.05,
+    "x_max": 0.95
+  },
+  "product_name_zone": {
+    "y_min": 0.35,
+    "y_max": 0.44,
+    "x_min": 0.05,
+    "x_max": 0.95
+  }
+}

@@ -2,3 +2,6 @@
 # 使い方: pip install -r requirements-screenshots.txt
 easyocr>=1.7.0
 Pillow>=9.0.0
+# Mercari iPhone 領域OCR（screenshot_config.json で use_mercari_iphone_ocr: true のとき）
+pytesseract>=0.3.10
+opencv-python-headless>=4.5.0
