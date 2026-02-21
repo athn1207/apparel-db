@@ -4,7 +4,7 @@
     "brand": "AURALEE",
     "product_name": "スウェット 23SS",
     "price": 12000,
-    "images": ["images/IMG_7672.png", "images/IMG_7673.png"],
+    "images": [],
     "screenshot_count": 2,
     "created_at": "2026-02-21"
   },
@@ -15,6 +15,15 @@
     "price": 8000,
     "images": [],
     "screenshot_count": 5,
+    "created_at": "2026-02-21"
+  },
+  {
+    "id": "denim-001",
+    "brand": "その他",
+    "product_name": "デニム",
+    "price": 0,
+    "images": ["images/IMG_7672.png", "images/IMG_7673.png"],
+    "screenshot_count": 0,
     "created_at": "2026-02-21"
   }
 ]
