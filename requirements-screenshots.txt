@@ -1,0 +1,4 @@
+# スクリーンショット処理スクリプト用（process_screenshots.py）
+# 使い方: pip install -r requirements-screenshots.txt
+easyocr>=1.7.0
+Pillow>=9.0.0

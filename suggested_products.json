@@ -1,0 +1,15 @@
+[
+  {
+    "id": "product-002",
+    "brand": "JACOB COHEN",
+    "product_name": "STYLE622",
+    "price": 0,
+    "images": [
+      "images/product-002_1.png",
+      "images/product-002_2.png",
+      "images/product-002_3.png"
+    ],
+    "screenshot_count": 3,
+    "created_at": "2026-02-21"
+  }
+]
