@@ -16,27 +16,5 @@
     "images": [],
     "screenshot_count": 5,
     "created_at": "2026-02-21"
-  },
-  {
-    "id": "denim-001",
-    "brand": "その他",
-    "product_name": "デニム",
-    "price": 0,
-    "images": ["images/IMG_7672.png", "images/IMG_7673.png"],
-    "screenshot_count": 0,
-    "created_at": "2026-02-21"
-  },
-  {
-    "id": "product-002",
-    "brand": "JACOB COHEN",
-    "product_name": "STYLE622",
-    "price": 0,
-    "images": [
-      "images/product-002_1.png",
-      "images/product-002_2.png",
-      "images/product-002_3.png"
-    ],
-    "screenshot_count": 3,
-    "created_at": "2026-02-21"
   }
 ]
