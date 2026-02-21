@@ -12,7 +12,17 @@ from typing import Any
 
 from PIL import Image
 
-# Default crop ratios (0–1) for Mercari iPhone layout
+# iPhone resolution for fixed crop (no auto-detect)
+IPHONE_WIDTH = 1179
+IPHONE_HEIGHT = 2556
+# Zone 1: Product title — x=0, y=1570, full width, height=120
+ZONE1_TITLE = {"x": 0, "y": 1570, "width": 1179, "height": 120}
+# Zone 2: Brand/status line — directly below Zone 1, height=80
+ZONE2_BRAND_STATUS = {"x": 0, "y": 1570 + 120, "width": 1179, "height": 80}
+# Legacy single crop (used by extract_product_title_fixed standalone)
+PRODUCT_TITLE_CROP = {"x": 0, "y": 1570, "width": 1179, "height": 120}
+
+# Default crop ratios (0–1) for Mercari iPhone layout (used by extract_from_image)
 DEFAULT_BRAND_REGION = {"x_min": 0.05, "x_max": 0.95, "y_min": 0.60, "y_max": 0.68}
 DEFAULT_PRODUCT_REGION = {"x_min": 0.05, "x_max": 0.95, "y_min": 0.40, "y_max": 0.48}
 DEFAULT_PRICE_REGION = {"x_min": 0.05, "x_max": 0.95, "y_min": 0.52, "y_max": 0.60}
@@ -54,6 +64,31 @@ def _crop_region(pil_img: Image.Image, region: dict) -> Image.Image:
     y0 = int(h * region["y_min"])
     y1 = int(h * region["y_max"])
     return pil_img.crop((x0, y0, x1, y1))
+
+
+def _crop_fixed_zone(pil_img: Image.Image, zone: dict) -> Image.Image:
+    """Crop by fixed pixel zone: x, y, width, height. Clamps to image bounds."""
+    w, h = pil_img.size
+    left = max(0, min(zone["x"], w - 1))
+    top = max(0, min(zone["y"], h - 1))
+    right = min(left + zone["width"], w)
+    bottom = min(top + zone["height"], h)
+    return pil_img.crop((left, top, right, bottom))
+
+
+def _crop_zone1_title(pil_img: Image.Image) -> Image.Image:
+    """Zone 1: Product title. Height 120px. No auto-detect."""
+    return _crop_fixed_zone(pil_img, ZONE1_TITLE)
+
+
+def _crop_zone2_brand_status(pil_img: Image.Image) -> Image.Image:
+    """Zone 2: Brand/status line. Height 80px, directly below Zone 1."""
+    return _crop_fixed_zone(pil_img, ZONE2_BRAND_STATUS)
+
+
+def _crop_product_title_fixed(pil_img: Image.Image) -> Image.Image:
+    """Crop Zone 1 only (product title). For standalone script."""
+    return _crop_zone1_title(pil_img)
 
 
 def _normalize_dots(text: str) -> str:
@@ -119,34 +154,24 @@ def extract_from_image(
     image_path: Path | str,
     config_path: Path | None = None,
     *,
-    preprocess: bool = True,
+    preprocess: bool = False,
     contrast_factor: float = 1.5,
 ) -> dict[str, str]:
     """
-    Extract brand and product_name from a single Mercari screenshot using region-based OCR.
+    Extract brand and product_name from a single Mercari screenshot.
+    Two fixed crop zones (1179x2556): Zone 1 = product title (120px), Zone 2 = brand/status (80px, below Zone 1).
+    OCR runs separately per zone. Brand is extracted ONLY from Zone 2 (never from product title).
+    Preprocessing disabled. Uses lang="jpn+eng", --psm 6.
 
     Returns:
-        {
-          "brand": "...",
-          "product_name": "...",
-          "raw_brand_text": "...",
-          "raw_product_text": "..."
-        }
+        { "brand", "product_name", "raw_brand_text", "raw_product_text", "raw_price_text" }
     """
     image_path = Path(image_path)
     if not image_path.exists():
         return {"brand": "", "product_name": "", "raw_brand_text": "", "raw_product_text": "", "raw_price_text": ""}
 
-    brand_region, product_region, price_region = _load_region_config(config_path)
-    if config_path and config_path.exists():
-        try:
-            import json
-            with open(config_path, "r", encoding="utf-8") as f:
-                cfg = json.load(f)
-            if "preprocess" in cfg:
-                preprocess = bool(cfg["preprocess"])
-        except Exception:
-            pass
+    _, _, price_region = _load_region_config(config_path)
+    # Preprocessing disabled: OCR on cropped original only. Brand from Zone 2 only, not from title.
 
     try:
         pil = Image.open(image_path).convert("RGB")
@@ -158,43 +183,22 @@ def extract_from_image(
         print(f"ERROR: Could not load image: {image_path} (invalid or empty)")
         return {"brand": "", "product_name": "", "raw_brand_text": "", "raw_product_text": "", "raw_price_text": ""}
 
-    if preprocess:
-        try:
-            from scripts.ocr_preprocess import preprocess_for_ocr
-        except ImportError:
-            from ocr_preprocess import preprocess_for_ocr
-        def prep(crop_img: Image.Image) -> Image.Image:
-            return preprocess_for_ocr(
-                crop_img,
-                grayscale=True,
-                resize_2x_flag=True,
-                contrast_factor=contrast_factor,
-                adaptive_thresh=True,
-                sharpen_flag=True,
-            )
-    else:
-        def prep(crop_img: Image.Image) -> Image.Image:
-            return crop_img
-
-    # Brand region — raw OCR only for debug, then process
-    brand_crop = _crop_region(pil, brand_region)
-    brand_pil = prep(brand_crop)
-    raw_brand_text = _run_tesseract(brand_pil)
-    print(f"[OCR debug] {image_path.name} — Raw OCR result for brand region: {repr(raw_brand_text)}")
-    brand = _extract_brand_from_raw(raw_brand_text)
-
-    # Product name region — raw OCR only for debug, then process
-    product_crop = _crop_region(pil, product_region)
-    product_pil = prep(product_crop)
-    raw_product_text = _run_tesseract(product_pil)
-    print(f"[OCR debug] {image_path.name} — Raw OCR result for product name region: {repr(raw_product_text)}")
+    # Zone 1: Product title only (height 120px). OCR → product_name. Do NOT use for brand.
+    zone1_crop = _crop_zone1_title(pil)
+    raw_product_text = _run_tesseract(zone1_crop)
+    print(f"[Raw OCR] {image_path.name} Zone 1 (title): {repr(raw_product_text)}")
     product_name = _clean_product_text(raw_product_text)
 
-    # Price region — raw OCR for debug only (no processing)
+    # Zone 2: Brand/status line only (height 80px, below Zone 1). Brand MUST be extracted from here only.
+    zone2_crop = _crop_zone2_brand_status(pil)
+    raw_brand_text = _run_tesseract(zone2_crop)
+    print(f"[Raw OCR] {image_path.name} Zone 2 (brand/status): {repr(raw_brand_text)}")
+    brand = _extract_brand_from_raw(raw_brand_text)
+
+    # Price region — ratio-based (unchanged)
     price_crop = _crop_region(pil, price_region)
-    price_pil = prep(price_crop)
-    raw_price_text = _run_tesseract(price_pil)
-    print(f"[OCR debug] {image_path.name} — Raw OCR result for price region: {repr(raw_price_text)}")
+    raw_price_text = _run_tesseract(price_crop)
+    print(f"[Raw OCR] {image_path.name} price region: {repr(raw_price_text)}")
 
     return {
         "brand": brand,
@@ -205,15 +209,42 @@ def extract_from_image(
     }
 
 
-# Allow running as script for one image
+def extract_product_title_fixed(
+    image_path: Path | str,
+    save_crop_dir: Path | None = None,
+) -> dict[str, str]:
+    """
+    Fixed crop for iPhone 1179x2556. Zone 1 only (product title, height 120px).
+    Saves raw cropped image, runs OCR with lang="jpn+eng", config="--psm 6".
+    Returns and prints: raw_crop_path, raw_ocr_result.
+    """
+    image_path = Path(image_path)
+    if not image_path.exists():
+        return {"raw_crop_path": "", "raw_ocr_result": ""}
+    try:
+        pil = Image.open(image_path).convert("RGB")
+    except Exception as e:
+        print(f"ERROR: Could not load image: {image_path}\n  {e}")
+        return {"raw_crop_path": "", "raw_ocr_result": ""}
+    crop = _crop_product_title_fixed(pil)
+    out_dir = save_crop_dir or (image_path.resolve().parent / "crop_product_title")
+    out_dir = Path(out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    crop_path = out_dir / f"{image_path.stem}_crop.png"
+    crop.save(crop_path)
+    raw_text = _run_tesseract(crop, lang="jpn+eng", psm=6)
+    print("Raw cropped image:", crop_path)
+    print("Raw OCR result:", raw_text)
+    return {"raw_crop_path": str(crop_path), "raw_ocr_result": raw_text}
+
+
+# Allow running as script for one image (fixed crop: 1179x2556 product title zone only)
 if __name__ == "__main__":
-    import json
     import sys
     project_root = Path(__file__).resolve().parent.parent
-    config_path = project_root / "screenshot_config.json"
     path = Path(sys.argv[1]) if len(sys.argv) > 1 else None
     if not path or not path.exists():
         print("Usage: python mercari_ocr.py <image_path>")
         sys.exit(1)
-    result = extract_from_image(path, config_path)
-    print(json.dumps(result, ensure_ascii=False, indent=2))
+    crop_dir = project_root / "crop_product_title"
+    extract_product_title_fixed(path, save_crop_dir=crop_dir)
