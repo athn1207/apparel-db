@@ -4,7 +4,7 @@
     "brand": "AURALEE",
     "product_name": "スウェット 23SS",
     "price": 12000,
-    "images": [IMG_7672.png,IMG_7673.png],
+    "images": ["images/IMG_7672.png", "images/IMG_7673.png"],
     "screenshot_count": 2,
     "created_at": "2026-02-21"
   },
