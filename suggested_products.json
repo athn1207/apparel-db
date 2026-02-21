@@ -1,5 +1,17 @@
 [
   {
+    "id": "product-004",
+    "brand": "JACOB COHEN",
+    "product_name": "【 人 気 モ デ テ ル 】 JACOB COHEN STYLE ⑥②② サ イ ズ ③② 逸 紺",
+    "price": 0,
+    "images": [
+      "images/product-004_1.png",
+      "images/product-004_2.png"
+    ],
+    "screenshot_count": 2,
+    "created_at": "2026-02-22"
+  },
+  {
     "id": "product-005",
     "brand": "Deuxieme Classe",
     "product_name": "Deuxieme Classe FF30 ク ル ー ネ ッ ク カ ー デ ィ ガ ン ヴ ダ レ ー",
