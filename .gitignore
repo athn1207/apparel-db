@@ -4,3 +4,5 @@ venv/
 .env
 screenshots_input/
 crop_product_title/
+processed/
+failed/

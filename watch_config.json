@@ -1,0 +1,7 @@
+{
+  "watch_folder": "G:\\マイドライブ\\MercariScreenshots",
+  "data_json": "data/data.json",
+  "images_dir": "images",
+  "processed_dir": "processed",
+  "failed_dir": "failed"
+}

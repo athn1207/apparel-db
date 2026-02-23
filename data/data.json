@@ -1,7 +1,76 @@
 [
-  {"id":"auralee-001","brand":"AURALEE","product_name":"スウェット 23SS","price":12000,"images":[],"screenshot_count":2,"created_at":"2026-02-21"},
-  {"id":"nike-001","brand":"NIKE","product_name":"ナイロンジャケット","price":8000,"images":[],"screenshot_count":5,"created_at":"2026-02-21"},
-  {"id":"product-002","brand":"JACOB COHEN","product_name":"STYLE 622","price":0,"images":["images/product-002_1.png"],"screenshot_count":1,"created_at":"2026-02-22"},
-  {"id":"product-003","brand":"JACOB COHEN","product_name":"【 人 気 モ デ テ ル 】 JACOB COHEN STYLE ⑥②② サ イ ズ ③② 逸 紺","price":0,"images":["images/product-003_1.png","images/product-003_2.png"],"screenshot_count":2,"created_at":"2026-02-22"},
-  {"id":"product-005","brand":"Deuxieme Classe","product_name":"Deuxieme Classe FF30 ク ル ー ネ ッ ク カ ー デ ィ ガ ン ヴ ダ レ ー","price":0,"images":["images/product-005_1.png"],"screenshot_count":1,"created_at":"2026-02-22"}
+  {
+    "id": "auralee-001",
+    "brand": "AURALEE",
+    "product_name": "スウェット 23SS",
+    "price": 12000,
+    "images": [],
+    "screenshot_count": 2,
+    "created_at": "2026-02-21"
+  },
+  {
+    "id": "nike-001",
+    "brand": "NIKE",
+    "product_name": "ナイロンジャケット",
+    "price": 8000,
+    "images": [],
+    "screenshot_count": 5,
+    "created_at": "2026-02-21"
+  },
+  {
+    "id": "product-002",
+    "brand": "JACOB COHEN",
+    "product_name": "STYLE 622",
+    "price": 0,
+    "images": [
+      "images/product-002_1.png"
+    ],
+    "screenshot_count": 1,
+    "created_at": "2026-02-22"
+  },
+  {
+    "id": "product-003",
+    "brand": "JACOB COHEN",
+    "product_name": "【 人 気 モ デ テ ル 】 JACOB COHEN STYLE ⑥②② サ イ ズ ③② 逸 紺",
+    "price": 0,
+    "images": [
+      "images/product-003_1.png",
+      "images/product-003_2.png"
+    ],
+    "screenshot_count": 2,
+    "created_at": "2026-02-22"
+  },
+  {
+    "id": "product-005",
+    "brand": "Deuxieme Classe",
+    "product_name": "Deuxieme Classe FF30 ク ル ー ネ ッ ク カ ー デ ィ ガ ン ヴ ダ レ ー",
+    "price": 0,
+    "images": [
+      "images/product-005_1.png"
+    ],
+    "screenshot_count": 1,
+    "created_at": "2026-02-22"
+  },
+  {
+    "id": "product-007",
+    "brand": "ZANONE",
+    "product_name": "プ で ロ ロ | リ パ ブ パ ー プ グ ー * ブ す ブ ビ プ ー ジ タ ー ト ル ネ ッ ク ニ ッ ト セ ー タ ー",
+    "price": 0,
+    "images": [
+      "images/product-007_1.png"
+    ],
+    "screenshot_count": 1,
+    "created_at": "2026-02-23"
+  },
+  {
+    "id": "product-008",
+    "brand": "JURGEN LEHL",
+    "product_name": "布 乙 ヨ ー ガ ン レ ー ル 長 祐 ニ ッ ト カ ッ ト ソ — ア ル ル バ ル カ 力 表 材 卜 唯 ナ チ ュ ラ ル",
+    "price": 0,
+    "images": [
+      "images/product-008_1.png"
+    ],
+    "screenshot_count": 1,
+    "created_at": "2026-02-23"
+  }
 ]

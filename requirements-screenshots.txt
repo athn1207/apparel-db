@@ -5,3 +5,5 @@ Pillow>=9.0.0
 # Mercari iPhone 領域OCR（screenshot_config.json で use_mercari_iphone_ocr: true のとき）
 pytesseract>=0.3.10
 opencv-python-headless>=4.5.0
+# フォルダ監視（run_watcher.bat / watch_drive.py）
+watchdog>=3.0.0
